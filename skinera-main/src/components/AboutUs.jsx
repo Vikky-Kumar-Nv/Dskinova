@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import aboutImage from "../../Images/about/img_serv.jpg";
 
 export default function AboutUs() {
@@ -102,9 +103,12 @@ export default function AboutUs() {
 
             {/* CTA Button */}
             <div className="mt-8">
-              <button className="bg-[#c98963] text-white px-6 py-3 rounded-md hover:bg-[#be7f58] transition-colors duration-300 text-sm sm:text-base font-medium">
+              <Link
+                to="/about"
+                className="inline-block bg-[#c98963] text-white px-6 py-3 rounded-md hover:bg-[#be7f58] transition-colors duration-300 text-sm sm:text-base font-medium"
+              >
                 Learn More About Us
-              </button>
+              </Link>
             </div>
           </div>
         </div>
