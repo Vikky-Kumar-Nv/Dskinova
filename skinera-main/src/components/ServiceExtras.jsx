@@ -62,7 +62,7 @@ export default function ServiceExtras() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full bg-[#E0A075]">
+    <section ref={sectionRef} className="w-full bg-[#E0A075] py-8 md:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:h-[17.5vh] md:flex md:items-center py-6 md:py-0">
         <div className="w-full">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-center justify-items-center w-full">
