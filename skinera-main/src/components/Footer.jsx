@@ -130,7 +130,10 @@ export default function Footer() {
           <a href="#" className="hover:text-white text-sm md:text-base">
             Contact Us
           </a>
-          <Link to="/admin-login" className="hover:text-white text-sm md:text-base">
+          <Link
+            to="/admin-login"
+            className="hover:text-white text-sm md:text-base"
+          >
             Admin Login
           </Link>
         </nav>
@@ -176,34 +179,46 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Quicklinks</h3>
             <ul className="grid grid-cols-2 gap-y-2 gap-x-6 text-white/95 text-sm max-w-xs">
               <li>
-                <a href="#services" className="hover:text-white">
+                <Link
+                  to="/service/laser-hair-removal"
+                  className="hover:text-white"
+                >
                   Laser hair removal
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-white">
+                <Link to="/service/facials" className="hover:text-white">
                   Facials
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-white">
+                <Link
+                  to="/service/botox-treatment"
+                  className="hover:text-white"
+                >
                   Botox Treatment
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-white">
+                <Link to="/service/deep-peelings" className="hover:text-white">
                   Deep peelings
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-white">
+                <Link
+                  to="/service/microdermabrasion"
+                  className="hover:text-white"
+                >
                   Microdermabrasion
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-white">
+                <Link
+                  to="/service/skin-tightening"
+                  className="hover:text-white"
+                >
                   Skin tightening
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
