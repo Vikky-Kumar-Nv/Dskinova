@@ -9,7 +9,7 @@ const HeroThree = ({
   <section
     className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden contact-hero bg-cover bg-no-repeat"
     style={{
-      backgroundImage: `url(${backgroundImage})`,
+      // backgroundImage: `url(${backgroundImage})`,
       backgroundColor: "#e0a075",
       "--hero-pos": "center top -560px",
     }}
