@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
 import AppointmentModal from "./AppointmentModal.jsx";
@@ -9,7 +10,7 @@ import ServiceExtras from "./ServiceExtras.jsx";
 import ClientFaq from "./ClientFaq.jsx";
 import OurService from "./OurService.jsx";
 
-export default function ServiceDetail({ serviceId = "anti-aging" }) {
+export default function ServiceDetail({ serviceId }) {
   const [appointmentOpen, setAppointmentOpen] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
@@ -19,7 +20,11 @@ export default function ServiceDetail({ serviceId = "anti-aging" }) {
     console.log("Appointment request:", payload);
   };
 
-  const service = getServiceById(serviceId);
+  const params = typeof useParams === "function" ? useParams() : {};
+  const effectiveId =
+    serviceId || (params ? params.id : undefined) || "anti-aging";
+
+  const service = getServiceById(effectiveId);
 
   if (!service) {
     return <div className="text-center py-20">Service not found</div>;

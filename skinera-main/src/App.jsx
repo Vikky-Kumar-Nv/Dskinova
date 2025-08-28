@@ -15,7 +15,11 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutUsPage />} />
-        <Route path="/service" element={<ServiceDetail />} />
+        <Route
+          path="/service"
+          element={<ServiceDetail serviceId="anti-aging" />}
+        />
+        <Route path="/service/:id" element={<ServiceDetail />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/news" element={<NewsArchive />} />
         <Route path="/newstemplate" element={<NewsTemplate />} />
