@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mobile overflow safety: prevent accidental horizontal scroll on small screens */
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Smooth anchor scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* (unused) */
+
+/* Contact page mobile tweaks without affecting desktop */
+@media (max-width: 767px) {
+  /* Adjust hero background crop for small screens */
+  .contact-hero {
+    background-position: center top;
+  }
+}
