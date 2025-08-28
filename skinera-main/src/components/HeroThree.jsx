@@ -1,10 +1,8 @@
 import React from "react";
-import skinCareHero from "../../Images/Contact-page/skin-care-products-1.svg";
 
 const HeroThree = ({
   title = "Contact Us",
   introPara = "We're here to help. Reach out for appointments, treatment queries, or clinic information.",
-  backgroundImage = skinCareHero,
 }) => (
   <section
     className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden contact-hero bg-cover bg-no-repeat"
