@@ -15,6 +15,9 @@ import hairGfcImg from "../../Images/Services/hair-gfc.jpg";
 import hairRegrowthLaserImg from "../../Images/Services/hair-regrowth-laser.jpg";
 import koreanSkinTreatmentImg from "../../Images/Services/korean-skin-treatment.jpg";
 import botoxTreatmentImg from "../../Images/Services/botox-treatment.jpg";
+import manicureImg from "../../Images/Services/Manicure.jpg";
+import pedicureImg from "../../Images/Services/Pedicure.jpg";
+import fillerImg from "../../Images/Our-Service/imgi_53_hyaluronic-acid-injection-fillers-for-cheeks.jpg";
 import decorativeFlowerImg from "../../Images/Services/Flower/flower.png";
 
 export const servicesData = {
@@ -276,6 +279,62 @@ export const servicesData = {
     },
     included: ["Consultation", "Marking", "Injection", "Aftercare"],
     excluded: ["Fillers", "Peels", "Laser", "Surgery"],
+  },
+  filler: {
+    id: "filler",
+    title: "Dermal Filler Treatment",
+    price: 15000,
+    currency: "₹",
+    priceNote: "per syringe/area",
+    image: fillerImg,
+    decorativeFlower: decorativeFlowerImg,
+    videoThumbnail: fillerImg,
+    overview: {
+      title: "Overview",
+      description:
+        "Hyaluronic acid-based dermal fillers to restore volume and contour lips, cheeks, and jawline. Provides immediate, natural-looking enhancement with minimal downtime.",
+    },
+    included: ["Consultation", "Marking", "Injection", "Aftercare"],
+    excluded: ["Botox", "Laser", "Peels", "Surgery"],
+  },
+  manicure: {
+    id: "manicure",
+    title: "Manicure",
+    price: 800,
+    currency: "₹",
+    priceNote: "per session",
+    image: manicureImg,
+    decorativeFlower: decorativeFlowerImg,
+    videoThumbnail: manicureImg,
+    overview: {
+      title: "Overview",
+      description:
+        "Professional manicure for clean, nourished, and polished hands. Includes cuticle care, nail shaping, gentle exfoliation, and hydration.",
+    },
+    included: ["Nail Shaping", "Cuticle Care", "Massage", "Polish"],
+    excluded: ["Gel Extensions", "Acrylics", "Nail Art", "Paraffin"],
+  },
+  pedicure: {
+    id: "pedicure",
+    title: "Pedicure",
+    price: 1000,
+    currency: "₹",
+    priceNote: "per session",
+    image: pedicureImg,
+    decorativeFlower: decorativeFlowerImg,
+    videoThumbnail: pedicureImg,
+    overview: {
+      title: "Overview",
+      description:
+        "Revitalizing pedicure to soften and refresh feet. Includes soaking, exfoliation, cuticle care, nail shaping, and moisturizing.",
+    },
+    included: ["Foot Soak", "Exfoliation", "Cuticle Care", "Polish"],
+    excluded: [
+      "Medical Pedicure",
+      "Callus Removal",
+      "Gel Extensions",
+      "Acrylics",
+    ],
   },
 };
 

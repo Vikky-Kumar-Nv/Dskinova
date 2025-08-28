@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 // Decorative background and service images
 import bgFlower from "../../Images/Our-Service/bg-Flower-png-Use-It-InLargeWidth.png";
@@ -9,7 +10,7 @@ import pedicure from "../../Images/Our-Service/imgi_52_female-feet-with-white-fr
 import filler from "../../Images/Our-Service/imgi_53_hyaluronic-acid-injection-fillers-for-cheeks.jpg";
 import body from "../../Images/Our-Service/imgi_54_skincare-bodycare-beauty-and-bath-concept-close-up-of-attractive-naked-asian-woman-in-shower.jpg";
 
-const Card = ({ img, title, onBook }) => (
+const Card = ({ img, title, onBook, linkTo = "/service/anti-aging" }) => (
   <div className="relative">
     <img
       src={img}
@@ -21,12 +22,12 @@ const Card = ({ img, title, onBook }) => (
         {title}
       </h3>
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <a
-          href="#service-details"
+        <Link
+          to={linkTo}
           className="inline-flex items-center justify-center h-10 rounded-md text-sm font-medium border border-[#ead9cf] text-[#a36f52] hover:border-[#c98963] hover:bg-orange-50 transition-colors duration-300"
         >
           <span>Learn More</span>
-        </a>
+        </Link>
         <button
           type="button"
           onClick={onBook}
@@ -68,16 +69,48 @@ export default function OurService({ onBookAppointment }) {
 
         {/* Grid */}
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-          <Card img={face} title="Face Treatment" onBook={onBookAppointment} />
-          <Card img={manicure} title="Manicure" onBook={onBookAppointment} />
-          <Card img={lips} title="Lips Treatment" onBook={onBookAppointment} />
-          <Card img={pedicure} title="Padicure" onBook={onBookAppointment} />
+          {/* Face Treatment → Facials */}
+          <Card
+            img={face}
+            title="Face Treatment"
+            onBook={onBookAppointment}
+            linkTo="/service/facials"
+          />
+          {/* Manicure → own service */}
+          <Card
+            img={manicure}
+            title="Manicure"
+            onBook={onBookAppointment}
+            linkTo="/service/manicure"
+          />
+          {/* Lips Treatment → Filler */}
+          <Card
+            img={lips}
+            title="Lips Treatment"
+            onBook={onBookAppointment}
+            linkTo="/service/filler"
+          />
+          {/* Pedicure → own service (spelling fix) */}
+          <Card
+            img={pedicure}
+            title="Pedicure"
+            onBook={onBookAppointment}
+            linkTo="/service/pedicure"
+          />
+          {/* Filler & Botox → Botox Treatment */}
           <Card
             img={filler}
             title="Filler & Botox"
             onBook={onBookAppointment}
+            linkTo="/service/botox-treatment"
           />
-          <Card img={body} title="Body Care" onBook={onBookAppointment} />
+          {/* Body Care → Anti-aging solutions */}
+          <Card
+            img={body}
+            title="Body Care"
+            onBook={onBookAppointment}
+            linkTo="/service/anti-aging"
+          />
         </div>
       </div>
     </section>
