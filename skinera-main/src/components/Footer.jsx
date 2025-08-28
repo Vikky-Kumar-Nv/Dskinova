@@ -121,15 +121,15 @@ export default function Footer() {
 
         {/* Nav links */}
         <nav className="mt-8 md:mt-10 flex flex-wrap justify-center gap-x-8 gap-y-2 text-white/95">
-          <a href="#" className="hover:text-white text-sm md:text-base">
+          <Link to="/" className="hover:text-white text-sm md:text-base">
             Home
-          </a>
-          <a href="#" className="hover:text-white text-sm md:text-base">
+          </Link>
+          <Link to="/about" className="hover:text-white text-sm md:text-base">
             About Us
-          </a>
-          <a href="#" className="hover:text-white text-sm md:text-base">
+          </Link>
+          <Link to="/contact" className="hover:text-white text-sm md:text-base">
             Contact Us
-          </a>
+          </Link>
           <Link
             to="/admin-login"
             className="hover:text-white text-sm md:text-base"
