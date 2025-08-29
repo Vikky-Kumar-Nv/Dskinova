@@ -237,6 +237,27 @@ app.get("/api/news", async (req, res) => {
   }
 });
 
+// News: latest N (default 4) lightweight payload
+app.get("/api/news/latest", async (req, res) => {
+  try {
+    let limit = parseInt(req.query.limit, 10);
+    if (Number.isNaN(limit) || limit <= 0) limit = 4;
+    // Cap limit to avoid excessive payloads
+    if (limit > 24) limit = 24;
+    const items = await News.find(
+      {},
+      "slug title excerpt date cardImage createdAt"
+    )
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+    res.json({ success: true, items });
+  } catch (err) {
+    console.error("Latest news error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 // News: get by slug
 app.get("/api/news/:slug", async (req, res) => {
   try {

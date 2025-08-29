@@ -1,9 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getLatestNews } from "../data/mockednews";
 
 export default function LatestNews() {
-  const newsArticles = getLatestNews(4);
+  const [newsArticles, setNewsArticles] = useState([]);
+
+  useEffect(() => {
+    let abort = false;
+    async function load() {
+      try {
+        const res = await fetch(
+          (import.meta.env.VITE_SERVER_URL || "") + "/api/news/latest?limit=4"
+        );
+        const data = await res.json();
+        if (!abort && data?.success) {
+          setNewsArticles(Array.isArray(data.items) ? data.items : []);
+        }
+      } catch (e) {
+        if (!abort) setNewsArticles([]);
+      }
+    }
+    load();
+    return () => {
+      abort = true;
+    };
+  }, []);
+
+  const formatDate = (d) => {
+    try {
+      return new Date(d).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch {
+      return "";
+    }
+  };
   return (
     <section className="bg-white py-16 sm:py-20 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,14 +51,17 @@ export default function LatestNews() {
 
         {/* News Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {newsArticles.map((article) => (
+          {newsArticles.slice(0, 4).map((article) => (
             <div key={article.slug} className="group">
               <div className="flex gap-4">
                 {/* Image */}
                 <div className="flex-shrink-0">
                   <Link to={`/news/${article.slug}`}>
                     <img
-                      src={article.cardImage}
+                      src={article.cardImage || "/logo.png"}
+                      onError={(e) => {
+                        e.currentTarget.src = "/logo.png";
+                      }}
                       alt={article.title}
                       className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-lg"
                     />
@@ -52,7 +87,7 @@ export default function LatestNews() {
                       />
                     </svg>
                     <span className="text-sm text-gray-500">
-                      {article.date}
+                      {formatDate(article.date || article.createdAt)}
                     </span>
                   </div>
 
