@@ -79,11 +79,22 @@ export default function NewsFirstSec({ article }) {
             </h2>
 
             <div className="mt-4">
-              <img
-                src={article.content.image}
-                alt={article.title}
-                className="w-full rounded-md object-cover"
-              />
+              {(() => {
+                const placeholder =
+                  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgdmlld0JveD0iMCAwIDY0MCAzNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjY0MCIgaGVpZ2h0PSIzNjAiIGZpbGw9IiNFQUVBRUQiLz48cGF0aCBkPSJNMTYwIDEyMGMwIDIyLjA5IDE3LjkgNDAgNDAgNDBzNDAuMDktMTcuOTEgNDAtNDBzLTE3LjkxLTQwLTQwLTQwLTE2MCAxNy45MS0xNjAgNDBaIiBmaWxsPSIjQ0VDRUNGIi8+PC9zdmc+";
+                const src =
+                  article?.content?.image || article?.cardImage || placeholder;
+                return (
+                  <img
+                    src={src}
+                    alt={article.title}
+                    className="w-full rounded-md object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = placeholder;
+                    }}
+                  />
+                );
+              })()}
             </div>
 
             {article.content.paragraphs.map((para, idx) => (

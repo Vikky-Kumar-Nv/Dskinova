@@ -1,6 +1,51 @@
 import React from "react";
+import toast from "react-hot-toast";
 
 export default function NewsCard({ news, onEdit, onDelete }) {
+  const publicUrl = `${window.location.origin}/news/${news.slug}`;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      toast.success("Link copied to clipboard");
+    } catch (e) {
+      // Fallback
+      const temp = document.createElement("input");
+      temp.value = publicUrl;
+      document.body.appendChild(temp);
+      temp.select();
+      try {
+        document.execCommand("copy");
+        toast.success("Link copied to clipboard");
+      } catch {
+        toast.error("Copy failed");
+      } finally {
+        document.body.removeChild(temp);
+      }
+    }
+  };
+
+  const shareLink = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: news.title,
+          text: news.excerpt || "",
+          url: publicUrl,
+        });
+        return;
+      }
+    } catch (e) {
+      // ignore and fallback
+    }
+    // Fallback: open Twitter share; also copy link
+    const text = encodeURIComponent(`${news.title}\n`);
+    const url = encodeURIComponent(publicUrl);
+    const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+    window.open(shareUrl, "_blank", "noopener,noreferrer");
+    copyLink();
+  };
+
   return (
     <div className="border border-gray-200 rounded-lg p-4">
       <div className="flex flex-col sm:flex-row sm:justify-between items-start gap-4">
@@ -20,7 +65,22 @@ export default function NewsCard({ news, onEdit, onDelete }) {
             <h3 className="font-semibold text-base sm:text-lg text-gray-800 mb-2 leading-snug break-words">
               {news.title}
             </h3>
-            <p className="text-xs sm:text-sm text-gray-600 mb-2">{news.date}</p>
+            <p className="text-xs sm:text-sm text-gray-600 mb-2">
+              {(() => {
+                try {
+                  const d = new Date(news.date);
+                  return d.toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                } catch {
+                  return news.date;
+                }
+              })()}
+            </p>
             <p className="text-gray-700 text-sm mb-3 line-clamp-2">
               {news.excerpt}
             </p>
@@ -38,6 +98,22 @@ export default function NewsCard({ news, onEdit, onDelete }) {
                   +{news.content.tags.length - 3} more
                 </span>
               )}
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <button
+                onClick={copyLink}
+                className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors duration-300"
+                title="Copy public link"
+              >
+                Copy Link
+              </button>
+              <button
+                onClick={shareLink}
+                className="px-3 py-1 text-sm bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors duration-300"
+                title="Share"
+              >
+                Share
+              </button>
             </div>
           </div>
         </div>
