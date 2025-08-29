@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function AccountManagerModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState("password"); // 'password' | 'username'
@@ -76,7 +77,7 @@ export default function AccountManagerModal({ isOpen, onClose }) {
     }
     localStorage.setItem("admin.password", next);
     setStored((s) => ({ ...s, password: next }));
-    setPwdMsg({ type: "success", text: "Password updated successfully." });
+    toast.success("Password updated successfully");
     setPwdForm({ current: "", next: "", confirm: "" });
   };
 
@@ -104,7 +105,7 @@ export default function AccountManagerModal({ isOpen, onClose }) {
     }
     localStorage.setItem("admin.username", username);
     setStored((s) => ({ ...s, username }));
-    setUserMsg({ type: "success", text: "Username updated successfully." });
+    toast.success("Username updated successfully");
     setUserForm({ password: "", username: "", confirm: "" });
   };
 

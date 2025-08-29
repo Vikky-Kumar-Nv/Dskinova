@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import Header from "../../components/Header.jsx";
 import Footer from "../../components/Footer.jsx";
 import DashboardHeader from "../components/DashboardHeader.jsx";
@@ -13,6 +14,7 @@ export default function Dashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showNewsManager, setShowNewsManager] = useState(false);
   const [showAccountManager, setShowAccountManager] = useState(false);
+  const [deletingSlug, setDeletingSlug] = useState(null);
   const [newsList, setNewsList] = useState(newsItems);
   const [editingNews, setEditingNews] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,10 +103,54 @@ export default function Dashboard() {
   };
 
   const handleDeleteNews = (slug) => {
-    if (window.confirm("Are you sure you want to delete this news article?")) {
-      setNewsList(newsList.filter((item) => item.slug !== slug));
-      setCurrentPage(1);
-    }
+    // Prevent duplicate confirmations
+    if (deletingSlug === slug) return;
+
+    // Dismiss any existing toasts first
+    toast.dismiss();
+
+    setDeletingSlug(slug);
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-3 w-full max-w-xs sm:max-w-sm">
+          <p className="font-medium text-gray-900">Delete News Article</p>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            Are you sure? This action cannot be undone.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <button
+              onClick={() => {
+                setNewsList(newsList.filter((item) => item.slug !== slug));
+                setCurrentPage(1);
+                setDeletingSlug(null);
+                toast.dismiss(t.id);
+                toast.success("News article deleted successfully");
+              }}
+              className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition-colors"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => {
+                setDeletingSlug(null);
+                toast.dismiss(t.id);
+              }}
+              className="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: Infinity,
+        style: {
+          padding: "16px",
+          minWidth: "280px",
+          maxWidth: "400px",
+        },
+      }
+    );
   };
 
   const handleSaveNews = () => {
@@ -140,8 +186,10 @@ export default function Dashboard() {
           item.slug === editingNews.slug ? newNews : item
         )
       );
+      toast.success("News article updated successfully");
     } else {
       setNewsList([...newsList, newNews]);
+      toast.success("News article added successfully");
     }
 
     setShowNewsManager(false);
@@ -254,12 +302,12 @@ export default function Dashboard() {
     const file = event.target.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        alert("Please select a valid image file");
+        toast.error("Please select a valid image file");
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image size should be less than 5MB");
+        toast.error("Image size should be less than 5MB");
         return;
       }
 
@@ -294,7 +342,7 @@ export default function Dashboard() {
         }
       };
       reader.onerror = () => {
-        alert("Error reading file");
+        toast.error("Error reading file");
         if (type === "card") {
           setNewsForm((prev) => ({ ...prev, cardImageLoading: false }));
         } else if (type === "content") {
