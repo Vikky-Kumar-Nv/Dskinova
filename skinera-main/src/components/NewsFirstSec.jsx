@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import sideBg from "../../Images/Contact-page/bg-3-flower-2x.png";
 import { Link } from "react-router-dom";
 
@@ -45,6 +46,49 @@ export default function NewsFirstSec({ article }) {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [popularNews, setPopularNews] = useState([]);
+  const pageUrl = `${window.location.origin}/news/${article?.slug ?? ""}`;
+  const shareText = article?.title ?? "";
+  const shareDesc =
+    article?.excerpt || article?.heroIntro || article?.content?.intro || "";
+  const shareImage = article?.content?.image || article?.cardImage || "";
+
+  const tryNativeShare = async (e) => {
+    try {
+      if (navigator.share) {
+        e?.preventDefault?.();
+        await navigator.share({
+          title: shareText,
+          text: shareDesc,
+          url: pageUrl,
+        });
+        return true;
+      }
+    } catch {
+      // ignore and fallback to anchors
+    }
+    return false;
+  };
+
+  const copyLink = async (e) => {
+    e?.preventDefault?.();
+    try {
+      await navigator.clipboard.writeText(pageUrl);
+      toast.success("Link copied");
+    } catch (err) {
+      const temp = document.createElement("input");
+      temp.value = pageUrl;
+      document.body.appendChild(temp);
+      temp.select();
+      try {
+        document.execCommand("copy");
+        toast.success("Link copied");
+      } catch {
+        toast.error("Copy failed");
+      } finally {
+        document.body.removeChild(temp);
+      }
+    }
+  };
 
   useEffect(() => {
     let abort = false;
@@ -145,33 +189,62 @@ export default function NewsFirstSec({ article }) {
               <div className="flex items-center gap-3 text-[#c98963]">
                 <span className="text-sm text-gray-600 mr-1">Share This:</span>
                 <a
-                  href="#"
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                    pageUrl
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="Share on Facebook"
                   className="hover:text-[#be7f58]"
+                  onClick={tryNativeShare}
                 >
                   <Facebook className="w-4 h-4" />
                 </a>
                 <a
-                  href="#"
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                    shareText
+                  )}&url=${encodeURIComponent(pageUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="Share on Twitter"
                   className="hover:text-[#be7f58]"
+                  onClick={tryNativeShare}
                 >
                   <Twitter className="w-4 h-4" />
                 </a>
                 <a
-                  href="#"
+                  href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(
+                    pageUrl
+                  )}&media=${encodeURIComponent(
+                    shareImage
+                  )}&description=${encodeURIComponent(shareDesc || shareText)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="Share on Pinterest"
                   className="hover:text-[#be7f58]"
+                  onClick={tryNativeShare}
                 >
                   <Pinterest className="w-4 h-4" />
                 </a>
                 <a
-                  href="#"
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                    pageUrl
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="Share on LinkedIn"
                   className="hover:text-[#be7f58]"
+                  onClick={tryNativeShare}
                 >
                   <LinkedIn className="w-4 h-4" />
                 </a>
+                <button
+                  onClick={copyLink}
+                  className="text-xs ml-1 px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                  aria-label="Copy link"
+                >
+                  Copy
+                </button>
               </div>
             </div>
           </article>
