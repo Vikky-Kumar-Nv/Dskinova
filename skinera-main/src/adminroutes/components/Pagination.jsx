@@ -17,12 +17,12 @@ export default function Pagination({
   }
 
   return (
-    <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mt-6 pt-4 border-t border-gray-200">
       <div className="text-sm text-gray-700">
         Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of{" "}
         {totalItems} articles
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={onPrevPage}
           disabled={currentPage === 1}
@@ -32,7 +32,7 @@ export default function Pagination({
         </button>
 
         {/* Page Numbers */}
-        <div className="flex space-x-1">
+        <div className="flex flex-wrap gap-1">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}

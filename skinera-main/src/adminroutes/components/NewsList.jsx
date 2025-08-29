@@ -16,14 +16,14 @@ export default function NewsList({
   onNextPage,
 }) {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-domine font-medium text-[#b37556]">
+    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mt-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <h2 className="text-lg sm:text-xl font-domine font-medium text-[#b37556]">
           News Articles ({newsList.length})
         </h2>
         <button
           onClick={onAddNews}
-          className="bg-[#c98963] hover:bg-[#be7f58] text-white px-4 py-2 rounded-md transition-colors duration-300"
+          className="w-full sm:w-auto bg-[#c98963] hover:bg-[#be7f58] text-white px-4 py-2 rounded-md transition-colors duration-300"
         >
           Add New News
         </button>
