@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import sideBg from "../../Images/Contact-page/bg-3-flower-2x.png";
 import { Link } from "react-router-dom";
 
@@ -44,6 +44,28 @@ export default function NewsFirstSec({ article }) {
   const FORM_ACTION = "https://formsubmit.co/kunalking01grd@gmail.com";
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [popularNews, setPopularNews] = useState([]);
+
+  useEffect(() => {
+    let abort = false;
+    async function loadPopular() {
+      try {
+        const res = await fetch(import.meta.env.VITE_SERVER_URL + "/api/news");
+        const data = await res.json();
+        if (data?.success && Array.isArray(data.items)) {
+          const list = data.items
+            .filter((n) => n.slug !== article.slug)
+            .slice(0, 5)
+            .map((n) => ({ slug: n.slug, title: n.title }));
+          if (!abort) setPopularNews(list);
+        }
+      } catch {}
+    }
+    loadPopular();
+    return () => {
+      abort = true;
+    };
+  }, [article?.slug]);
 
   function handleSubscribe(e) {
     e.preventDefault();
@@ -162,7 +184,7 @@ export default function NewsFirstSec({ article }) {
                 Popular News
               </h3>
               <ul className="mt-4 space-y-3 text-sm text-[#c98963]">
-                {article.popular.map((p) => (
+                {popularNews.map((p) => (
                   <li key={p.slug}>
                     <Link
                       to={`/news/${p.slug}`}
@@ -172,6 +194,9 @@ export default function NewsFirstSec({ article }) {
                     </Link>
                   </li>
                 ))}
+                {popularNews.length === 0 && (
+                  <li className="text-gray-500">No other articles yet.</li>
+                )}
               </ul>
             </div>
 
