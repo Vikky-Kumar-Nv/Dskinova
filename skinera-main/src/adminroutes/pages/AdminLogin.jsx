@@ -67,6 +67,17 @@ export default function AdminLogin() {
       const data = await resp.json();
       if (resp.ok && data?.success) {
         localStorage.setItem("adminAuthenticated", "true");
+        // Optionally refresh stored profile username for UI
+        try {
+          const p = await fetch(
+            (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
+              "/api/admin/profile"
+          );
+          const pd = await p.json();
+          if (p.ok && pd?.success && pd?.username) {
+            localStorage.setItem("admin.username", pd.username);
+          }
+        } catch {}
         setMessage("Login successful! Redirecting...");
         setTimeout(() => navigate("/admin-dashboard"), 800);
       } else {

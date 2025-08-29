@@ -55,7 +55,14 @@ export default function Dashboard() {
     }
   }, [newsList.length, currentPage, itemsPerPage]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch(
+        (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
+          "/api/admin-logout",
+        { method: "POST" }
+      );
+    } catch {}
     localStorage.removeItem("adminAuthenticated");
     navigate("/admin-login");
   };

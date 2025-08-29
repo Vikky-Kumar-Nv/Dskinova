@@ -1,17 +1,34 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function AccountManagerModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState("password"); // 'password' | 'username'
 
-  // Stored credentials from localStorage only (no hardcoded defaults)
-  const [stored, setStored] = useState({ username: "", password: "" });
+  // Profile info from backend
+  const [stored, setStored] = useState({ username: "" });
 
   useEffect(() => {
-    const u = localStorage.getItem("admin.username") || "";
-    const p = localStorage.getItem("admin.password") || "";
-    setStored({ username: u, password: p });
-  }, []);
+    if (!isOpen) return;
+    const loadProfile = async () => {
+      try {
+        const resp = await fetch(
+          (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
+            "/api/admin/profile"
+        );
+        const data = await resp.json();
+        if (resp.ok && data?.success) {
+          setStored({ username: data.username || "" });
+          // Optional: keep for display elsewhere
+          localStorage.setItem("admin.username", data.username || "");
+        } else {
+          toast.error(data?.message || "Failed to load profile");
+        }
+      } catch (e) {
+        toast.error("Failed to load profile");
+      }
+    };
+    loadProfile();
+  }, [isOpen]);
 
   // Change Password form state
   const [pwdForm, setPwdForm] = useState({
@@ -45,12 +62,6 @@ export default function AccountManagerModal({ isOpen, onClose }) {
     if (!current || !next || !confirm) {
       return setPwdMsg({ type: "error", text: "All fields are required." });
     }
-    if (current !== stored.password) {
-      return setPwdMsg({
-        type: "error",
-        text: "Current password is incorrect.",
-      });
-    }
     if (next.length < 6) {
       return setPwdMsg({
         type: "error",
@@ -63,10 +74,33 @@ export default function AccountManagerModal({ isOpen, onClose }) {
         text: "New password and confirm password must match.",
       });
     }
-    localStorage.setItem("admin.password", next);
-    setStored((s) => ({ ...s, password: next }));
-    toast.success("Password updated successfully");
-    setPwdForm({ current: "", next: "", confirm: "" });
+    // Call backend API
+    (async () => {
+      try {
+        const resp = await fetch(
+          (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
+            "/api/admin/change-password",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              currentPassword: current,
+              newPassword: next,
+            }),
+          }
+        );
+        const data = await resp.json();
+        if (resp.ok && data?.success) {
+          toast.success("Password updated successfully");
+          setPwdForm({ current: "", next: "", confirm: "" });
+          setPwdMsg({ type: "", text: "" });
+        } else {
+          setPwdMsg({ type: "error", text: data?.message || "Update failed" });
+        }
+      } catch (e) {
+        setPwdMsg({ type: "error", text: "Update failed" });
+      }
+    })();
   };
 
   const handleUsernameUpdate = (e) => {
@@ -75,9 +109,6 @@ export default function AccountManagerModal({ isOpen, onClose }) {
     const { password, username, confirm } = userForm;
     if (!password || !username || !confirm) {
       return setUserMsg({ type: "error", text: "All fields are required." });
-    }
-    if (password !== stored.password) {
-      return setUserMsg({ type: "error", text: "Password is incorrect." });
     }
     if (username.trim().length < 3) {
       return setUserMsg({
@@ -91,10 +122,33 @@ export default function AccountManagerModal({ isOpen, onClose }) {
         text: "Username and confirm username must match.",
       });
     }
-    localStorage.setItem("admin.username", username);
-    setStored((s) => ({ ...s, username }));
-    toast.success("Username updated successfully");
-    setUserForm({ password: "", username: "", confirm: "" });
+    // Call backend API
+    (async () => {
+      try {
+        const resp = await fetch(
+          (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
+            "/api/admin/change-username",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password, newUsername: username }),
+          }
+        );
+        const data = await resp.json();
+        if (resp.ok && data?.success) {
+          const nextUsername = data.username || username;
+          setStored((s) => ({ ...s, username: nextUsername }));
+          localStorage.setItem("admin.username", nextUsername);
+          toast.success("Username updated successfully");
+          setUserForm({ password: "", username: "", confirm: "" });
+          setUserMsg({ type: "", text: "" });
+        } else {
+          setUserMsg({ type: "error", text: data?.message || "Update failed" });
+        }
+      } catch (e) {
+        setUserMsg({ type: "error", text: "Update failed" });
+      }
+    })();
   };
 
   if (!isOpen) return null;
