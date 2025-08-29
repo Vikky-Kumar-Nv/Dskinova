@@ -7,7 +7,6 @@ import DashboardHeader from "../components/DashboardHeader.jsx";
 import AccountManagerModal from "../components/AccountManagerModal.jsx";
 import NewsManager from "../components/NewsManager.jsx";
 import NewsList from "../components/NewsList.jsx";
-import { newsItems } from "../../data/mockednews";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -15,7 +14,7 @@ export default function Dashboard() {
   const [showNewsManager, setShowNewsManager] = useState(false);
   const [showAccountManager, setShowAccountManager] = useState(false);
   const [deletingSlug, setDeletingSlug] = useState(null);
-  const [newsList, setNewsList] = useState(newsItems);
+  const [newsList, setNewsList] = useState([]);
   const [editingNews, setEditingNews] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
@@ -45,6 +44,23 @@ export default function Dashboard() {
       setIsAuthenticated(true);
     }
   }, [navigate]);
+
+  useEffect(() => {
+    // Load news from backend
+    async function loadNews() {
+      try {
+        const res = await fetch(import.meta.env.VITE_SERVER_URL + "/api/news");
+        const data = await res.json();
+        if (data?.success) {
+          setNewsList(data.items || []);
+          setCurrentPage(1);
+        }
+      } catch (e) {
+        // ignore; keep list as-is
+      }
+    }
+    loadNews();
+  }, []);
 
   useEffect(() => {
     const maxPage = Math.ceil(newsList.length / itemsPerPage);
@@ -158,48 +174,56 @@ export default function Dashboard() {
     );
   };
 
-  const handleSaveNews = () => {
-    const slug = newsForm.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-    const currentDate = new Date().toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-    const newNews = {
-      slug,
-      title: newsForm.title,
-      date: currentDate,
-      excerpt: newsForm.excerpt,
-      cardImage: newsForm.cardImagePreview || "/placeholder-image.jpg",
-      heroIntro: newsForm.heroIntro,
-      content: {
-        intro: newsForm.content.intro,
-        image: newsForm.content.imagePreview || "/placeholder-image.jpg",
-        paragraphs: newsForm.content.paragraphs.filter((p) => p.trim() !== ""),
-        tags: newsForm.content.tags.filter((t) => t.trim() !== ""),
-      },
-      popular: newsForm.popular,
-    };
-
+  const handleSaveNews = async () => {
     if (editingNews) {
-      setNewsList(
-        newsList.map((item) =>
-          item.slug === editingNews.slug ? newNews : item
-        )
-      );
-      toast.success("News article updated successfully");
-    } else {
-      setNewsList([...newsList, newNews]);
-      toast.success("News article added successfully");
+      toast.error("Update not supported yet.");
+      return;
     }
 
-    setShowNewsManager(false);
-    setEditingNews(null);
-    setCurrentPage(1);
+    const fd = new FormData();
+    fd.append("title", newsForm.title || "");
+    fd.append("excerpt", newsForm.excerpt || "");
+    fd.append("heroIntro", newsForm.heroIntro || "");
+    fd.append("contentIntro", newsForm.content.intro || "");
+    fd.append(
+      "paragraphs",
+      JSON.stringify(
+        (newsForm.content.paragraphs || []).filter((p) => p.trim() !== "")
+      )
+    );
+    fd.append(
+      "tags",
+      JSON.stringify(
+        (newsForm.content.tags || []).filter((t) => t.trim() !== "")
+      )
+    );
+    fd.append("popular", JSON.stringify(newsForm.popular || []));
+    if (newsForm.cardImage) fd.append("cardImage", newsForm.cardImage);
+    if (newsForm.content.image)
+      fd.append("contentImage", newsForm.content.image);
+
+    try {
+      const res = await fetch(import.meta.env.VITE_SERVER_URL + "/api/news", {
+        method: "POST",
+        body: fd,
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) throw new Error(data?.message || "");
+      toast.success("News article added successfully");
+      setShowNewsManager(false);
+      setEditingNews(null);
+      // Refresh list
+      try {
+        const listRes = await fetch(
+          import.meta.env.VITE_SERVER_URL + "/api/news"
+        );
+        const listData = await listRes.json();
+        if (listData?.success) setNewsList(listData.items || []);
+      } catch {}
+      setCurrentPage(1);
+    } catch (e) {
+      toast.error(e?.message || "Failed to add news");
+    }
   };
 
   const handleFormChange = (field, value) => {

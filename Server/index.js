@@ -5,6 +5,10 @@ import bcrypt from "bcryptjs";
 import Admin from "./models/Admin.js";
 import dotenv from "dotenv";
 dotenv.config();
+import News from "./models/News.js";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { PassThrough } from "stream";
 
 // Basic Express app setup
 const app = express();
@@ -16,6 +20,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // MongoDB connection (from env only)
 const { MONGO_URI } = process.env;
@@ -26,6 +31,34 @@ async function connectDb() {
   }
   await mongoose.connect(MONGO_URI, {});
   console.log("MongoDB connected");
+}
+
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+function uploadToCloudinary(buffer, folder) {
+  return new Promise((resolve, reject) => {
+    const pass = new PassThrough();
+    const opts = { folder };
+    const uploadStream = cloudinary.uploader.upload_stream(
+      opts,
+      (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      }
+    );
+    pass.end(buffer);
+    pass.pipe(uploadStream);
+  });
 }
 
 // Login route
@@ -165,6 +198,100 @@ app.post("/api/admin-logout", (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({ ok: true });
 });
+
+// News: list
+app.get("/api/news", async (req, res) => {
+  try {
+    const items = await News.find({}).sort({ createdAt: -1 }).lean();
+    res.json({ success: true, items });
+  } catch (err) {
+    console.error("List news error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// News: create (multipart form with optional images)
+app.post(
+  "/api/news",
+  upload.fields([
+    { name: "cardImage", maxCount: 1 },
+    { name: "contentImage", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const {
+        title = "",
+        excerpt = "",
+        heroIntro = "",
+        contentIntro = "",
+        paragraphs = "[]",
+        tags = "[]",
+        popular = "[]",
+      } = req.body || {};
+
+      if (!title.trim()) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Title is required" });
+      }
+
+      const slug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+      // Upload images if provided
+      let cardImageUrl = "";
+      let contentImageUrl = "";
+      if (req.files?.cardImage?.[0]) {
+        const result = await uploadToCloudinary(
+          req.files.cardImage[0].buffer,
+          "dskinova/news"
+        );
+        cardImageUrl = result.secure_url;
+      }
+      if (req.files?.contentImage?.[0]) {
+        const result = await uploadToCloudinary(
+          req.files.contentImage[0].buffer,
+          "dskinova/news"
+        );
+        contentImageUrl = result.secure_url;
+      }
+
+      const parsedParagraphs = JSON.parse(paragraphs || "[]");
+      const parsedTags = JSON.parse(tags || "[]");
+      const parsedPopular = JSON.parse(popular || "[]");
+
+      const doc = await News.create({
+        slug,
+        title: title.trim(),
+        excerpt,
+        heroIntro,
+        cardImage: cardImageUrl,
+        content: {
+          intro: contentIntro,
+          image: contentImageUrl,
+          paragraphs: Array.isArray(parsedParagraphs) ? parsedParagraphs : [],
+          tags: Array.isArray(parsedTags) ? parsedTags : [],
+        },
+        popular: Array.isArray(parsedPopular) ? parsedPopular : [],
+      });
+
+      res.json({ success: true, item: doc });
+    } catch (err) {
+      console.error("Create news error:", err);
+      if (err?.code === 11000) {
+        return res
+          .status(409)
+          .json({
+            success: false,
+            message: "News with same slug already exists",
+          });
+      }
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  }
+);
 
 // Start server after DB is ready
 const PORT = process.env.PORT || 3002;
