@@ -61,6 +61,33 @@ function uploadToCloudinary(buffer, folder) {
   });
 }
 
+// Helpers: slugify and ensure unique slug
+function slugify(text = "") {
+  return String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function generateUniqueSlug(baseSlug) {
+  const re = new RegExp(`^${escapeRegExp(baseSlug)}(?:-(\\d+))?$`);
+  const existing = await News.find({ slug: re }).select("slug").lean();
+  if (!existing.length) return baseSlug;
+  let max = 1; // if base exists, next is 2
+  for (const doc of existing) {
+    const m = doc.slug.match(new RegExp(`^${escapeRegExp(baseSlug)}-(\\d+)$`));
+    if (m) {
+      const n = parseInt(m[1], 10);
+      if (!Number.isNaN(n) && n > max) max = n;
+    }
+  }
+  return `${baseSlug}-${max + 1}`;
+}
+
 // Login route
 app.post("/api/admin-login", async (req, res) => {
   try {
@@ -247,11 +274,7 @@ app.post(
           .status(400)
           .json({ success: false, message: "Title is required" });
       }
-
-      const slug = title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+      const baseSlug = slugify(title) || "news";
 
       // Upload images if provided
       let cardImageUrl = "";
@@ -274,9 +297,7 @@ app.post(
       const parsedParagraphs = JSON.parse(paragraphs || "[]");
       const parsedTags = JSON.parse(tags || "[]");
       const parsedPopular = JSON.parse(popular || "[]");
-
-      const doc = await News.create({
-        slug,
+      const basePayload = {
         title: title.trim(),
         excerpt,
         heroIntro,
@@ -288,17 +309,24 @@ app.post(
           tags: Array.isArray(parsedTags) ? parsedTags : [],
         },
         popular: Array.isArray(parsedPopular) ? parsedPopular : [],
-      });
+      };
 
-      res.json({ success: true, item: doc });
+      // First attempt with next available slug
+      try {
+        const slug1 = await generateUniqueSlug(baseSlug);
+        const doc1 = await News.create({ ...basePayload, slug: slug1 });
+        return res.json({ success: true, item: doc1 });
+      } catch (e1) {
+        if (e1?.code === 11000) {
+          // Race condition: compute again and retry once
+          const slug2 = await generateUniqueSlug(baseSlug);
+          const doc2 = await News.create({ ...basePayload, slug: slug2 });
+          return res.json({ success: true, item: doc2 });
+        }
+        throw e1;
+      }
     } catch (err) {
       console.error("Create news error:", err);
-      if (err?.code === 11000) {
-        return res.status(409).json({
-          success: false,
-          message: "News with same slug already exists",
-        });
-      }
       res.status(500).json({ success: false, message: "Server error" });
     }
   }
