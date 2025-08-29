@@ -51,18 +51,30 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      // Simulate API call - replace with your actual authentication logic
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 700));
 
-      // For demo purposes, simple check
-      if (formData.username === "admin" && formData.password === "admin123") {
-        // Store authentication status
+      // Load stored credentials with defaults
+      const storedUsername = localStorage.getItem("admin.username") || "admin";
+      const storedPassword =
+        localStorage.getItem("admin.password") || "admin123";
+      // Seed if missing so Manage Account can update later
+      if (!localStorage.getItem("admin.username")) {
+        localStorage.setItem("admin.username", storedUsername);
+      }
+      if (!localStorage.getItem("admin.password")) {
+        localStorage.setItem("admin.password", storedPassword);
+      }
+
+      if (
+        formData.username === storedUsername &&
+        formData.password === storedPassword
+      ) {
         localStorage.setItem("adminAuthenticated", "true");
         setMessage("Login successful! Redirecting...");
-        // Redirect to dashboard
         setTimeout(() => {
           navigate("/admin-dashboard");
-        }, 1500);
+        }, 800);
       } else {
         setMessage("Invalid username or password");
       }
@@ -165,11 +177,10 @@ export default function AdminLogin() {
 
             <div className="mt-4 p-3 bg-blue-50 rounded-md">
               <p className="text-xs text-blue-700">
-                <strong>Demo Credentials:</strong>
+                <strong>Default Credentials:</strong> Username: admin, Password:
+                admin123
                 <br />
-                Username: admin
-                <br />
-                Password: admin123
+                You can change these in the Dashboard via Manage Account.
               </p>
             </div>
           </div>

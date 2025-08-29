@@ -11,3 +11,4 @@ export { default as NewsPreview } from "./components/NewsPreview.jsx";
 export { default as NewsList } from "./components/NewsList.jsx";
 export { default as NewsCard } from "./components/NewsCard.jsx";
 export { default as Pagination } from "./components/Pagination.jsx";
+export { default as AccountManagerModal } from "./components/AccountManagerModal.jsx";

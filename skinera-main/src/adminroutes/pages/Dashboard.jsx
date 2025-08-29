@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header.jsx";
 import Footer from "../../components/Footer.jsx";
 import DashboardHeader from "../components/DashboardHeader.jsx";
+import AccountManagerModal from "../components/AccountManagerModal.jsx";
 import NewsManager from "../components/NewsManager.jsx";
 import NewsList from "../components/NewsList.jsx";
 import { newsItems } from "../../data/mockednews";
@@ -11,6 +12,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showNewsManager, setShowNewsManager] = useState(false);
+  const [showAccountManager, setShowAccountManager] = useState(false);
   const [newsList, setNewsList] = useState(newsItems);
   const [editingNews, setEditingNews] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -336,7 +338,10 @@ export default function Dashboard() {
       <Header />
       <main className="bg-gray-50 min-h-screen py-16">
         <div className="max-w-7xl mx-auto px-4">
-          <DashboardHeader onLogout={handleLogout} />
+          <DashboardHeader
+            onLogout={handleLogout}
+            onManage={() => setShowAccountManager(true)}
+          />
 
           {/* News Management */}
           {showNewsManager && (
@@ -377,6 +382,10 @@ export default function Dashboard() {
         </div>
       </main>
       <Footer />
+      <AccountManagerModal
+        isOpen={showAccountManager}
+        onClose={() => setShowAccountManager(false)}
+      />
     </>
   );
 }

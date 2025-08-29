@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function DashboardHeader({ onLogout }) {
+export default function DashboardHeader({ onLogout, onManage }) {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
       <div className="flex justify-between items-center">
@@ -10,12 +10,20 @@ export default function DashboardHeader({ onLogout }) {
           </h1>
           <p className="text-gray-600">Welcome to DSkinova Admin Panel</p>
         </div>
-        <button
-          onClick={onLogout}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors duration-300"
-        >
-          Logout
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onManage}
+            className="border border-[#c98963] text-[#c98963] hover:bg-[#fff5ef] px-4 py-2 rounded-md transition-colors duration-300"
+          >
+            Manage Account
+          </button>
+          <button
+            onClick={onLogout}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors duration-300"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );
