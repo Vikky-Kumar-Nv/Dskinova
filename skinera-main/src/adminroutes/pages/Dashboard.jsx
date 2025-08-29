@@ -140,12 +140,31 @@ export default function Dashboard() {
           </p>
           <div className="flex flex-col sm:flex-row gap-2">
             <button
-              onClick={() => {
-                setNewsList(newsList.filter((item) => item.slug !== slug));
-                setCurrentPage(1);
-                setDeletingSlug(null);
-                toast.dismiss(t.id);
-                toast.success("News article deleted successfully");
+              onClick={async () => {
+                try {
+                  const res = await fetch(
+                    `${import.meta.env.VITE_SERVER_URL}/api/news/${slug}`,
+                    { method: "DELETE" }
+                  );
+                  const data = await res.json();
+                  if (!res.ok || !data?.success)
+                    throw new Error(data?.message || "Failed to delete");
+                  // Refresh list
+                  try {
+                    const listRes = await fetch(
+                      import.meta.env.VITE_SERVER_URL + "/api/news"
+                    );
+                    const listData = await listRes.json();
+                    if (listData?.success) setNewsList(listData.items || []);
+                  } catch {}
+                  setCurrentPage(1);
+                  toast.success("News article deleted successfully");
+                } catch (e) {
+                  toast.error(e?.message || "Delete failed");
+                } finally {
+                  setDeletingSlug(null);
+                  toast.dismiss(t.id);
+                }
               }}
               className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition-colors"
             >
@@ -175,11 +194,6 @@ export default function Dashboard() {
   };
 
   const handleSaveNews = async () => {
-    if (editingNews) {
-      toast.error("Update not supported yet.");
-      return;
-    }
-
     const fd = new FormData();
     fd.append("title", newsForm.title || "");
     fd.append("excerpt", newsForm.excerpt || "");
@@ -203,13 +217,20 @@ export default function Dashboard() {
       fd.append("contentImage", newsForm.content.image);
 
     try {
-      const res = await fetch(import.meta.env.VITE_SERVER_URL + "/api/news", {
-        method: "POST",
-        body: fd,
-      });
+      let url = import.meta.env.VITE_SERVER_URL + "/api/news";
+      let method = "POST";
+      if (editingNews?.slug) {
+        url = `${import.meta.env.VITE_SERVER_URL}/api/news/${editingNews.slug}`;
+        method = "PUT";
+      }
+      const res = await fetch(url, { method, body: fd });
       const data = await res.json();
       if (!res.ok || !data?.success) throw new Error(data?.message || "");
-      toast.success("News article added successfully");
+      toast.success(
+        editingNews
+          ? "News article updated successfully"
+          : "News article added successfully"
+      );
       setShowNewsManager(false);
       setEditingNews(null);
       // Refresh list
@@ -222,7 +243,10 @@ export default function Dashboard() {
       } catch {}
       setCurrentPage(1);
     } catch (e) {
-      toast.error(e?.message || "Failed to add news");
+      toast.error(
+        (editingNews ? "Failed to update news: " : "Failed to add news: ") +
+          (e?.message || "")
+      );
     }
   };
 

@@ -210,6 +210,19 @@ app.get("/api/news", async (req, res) => {
   }
 });
 
+// News: get by slug
+app.get("/api/news/:slug", async (req, res) => {
+  try {
+    const item = await News.findOne({ slug: req.params.slug }).lean();
+    if (!item)
+      return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, item });
+  } catch (err) {
+    console.error("Get news error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 // News: create (multipart form with optional images)
 app.post(
   "/api/news",
@@ -281,17 +294,102 @@ app.post(
     } catch (err) {
       console.error("Create news error:", err);
       if (err?.code === 11000) {
-        return res
-          .status(409)
-          .json({
-            success: false,
-            message: "News with same slug already exists",
-          });
+        return res.status(409).json({
+          success: false,
+          message: "News with same slug already exists",
+        });
       }
       res.status(500).json({ success: false, message: "Server error" });
     }
   }
 );
+
+// News: update by slug (multipart optional images)
+app.put(
+  "/api/news/:slug",
+  upload.fields([
+    { name: "cardImage", maxCount: 1 },
+    { name: "contentImage", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const doc = await News.findOne({ slug });
+      if (!doc) {
+        return res.status(404).json({ success: false, message: "Not found" });
+      }
+
+      const {
+        title,
+        excerpt,
+        heroIntro,
+        contentIntro,
+        paragraphs,
+        tags,
+        popular,
+      } = req.body || {};
+
+      if (typeof title === "string" && title.trim()) doc.title = title.trim();
+      if (typeof excerpt === "string") doc.excerpt = excerpt;
+      if (typeof heroIntro === "string") doc.heroIntro = heroIntro;
+      if (typeof contentIntro === "string") doc.content.intro = contentIntro;
+
+      if (typeof paragraphs !== "undefined") {
+        try {
+          const arr = JSON.parse(paragraphs || "[]");
+          doc.content.paragraphs = Array.isArray(arr) ? arr : [];
+        } catch {}
+      }
+      if (typeof tags !== "undefined") {
+        try {
+          const arr = JSON.parse(tags || "[]");
+          doc.content.tags = Array.isArray(arr) ? arr : [];
+        } catch {}
+      }
+      if (typeof popular !== "undefined") {
+        try {
+          const arr = JSON.parse(popular || "[]");
+          doc.popular = Array.isArray(arr) ? arr : [];
+        } catch {}
+      }
+
+      if (req.files?.cardImage?.[0]) {
+        const result = await uploadToCloudinary(
+          req.files.cardImage[0].buffer,
+          "dskinova/news"
+        );
+        doc.cardImage = result.secure_url;
+      }
+      if (req.files?.contentImage?.[0]) {
+        const result = await uploadToCloudinary(
+          req.files.contentImage[0].buffer,
+          "dskinova/news"
+        );
+        doc.content.image = result.secure_url;
+      }
+
+      await doc.save();
+      res.json({ success: true, item: doc });
+    } catch (err) {
+      console.error("Update news error:", err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  }
+);
+
+// News: delete by slug
+app.delete("/api/news/:slug", async (req, res) => {
+  try {
+    const result = await News.findOneAndDelete({ slug: req.params.slug });
+    if (!result) {
+      return res.status(404).json({ success: false, message: "Not found" });
+    }
+    res.json({ success: true, message: "Deleted" });
+  } catch (err) {
+    console.error("Delete news error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 
 // Start server after DB is ready
 const PORT = process.env.PORT || 3002;
