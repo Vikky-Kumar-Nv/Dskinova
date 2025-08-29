@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "./Header.jsx";
-import Footer from "./Footer.jsx";
+import Header from "../../components/Header.jsx";
+import Footer from "../../components/Footer.jsx";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -15,15 +15,15 @@ export default function AdminLogin() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: "",
       }));
     }
   };
@@ -52,16 +52,16 @@ export default function AdminLogin() {
 
     try {
       // Simulate API call - replace with your actual authentication logic
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // For demo purposes, simple check
       if (formData.username === "admin" && formData.password === "admin123") {
         // Store authentication status
-        localStorage.setItem('adminAuthenticated', 'true');
+        localStorage.setItem("adminAuthenticated", "true");
         setMessage("Login successful! Redirecting...");
         // Redirect to dashboard
         setTimeout(() => {
-          navigate('/admin-dashboard');
+          navigate("/admin-dashboard");
         }, 1500);
       } else {
         setMessage("Invalid username or password");
@@ -83,14 +83,15 @@ export default function AdminLogin() {
               <h1 className="text-3xl font-domine font-medium text-[#b37556] mb-2">
                 Admin Login
               </h1>
-              <p className="text-gray-600">
-                Sign in to access the admin panel
-              </p>
+              <p className="text-gray-600">Sign in to access the admin panel</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Username
                 </label>
                 <input
@@ -110,7 +111,10 @@ export default function AdminLogin() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <input
@@ -130,11 +134,13 @@ export default function AdminLogin() {
               </div>
 
               {message && (
-                <div className={`p-3 rounded-md text-sm ${
-                  message.includes("successful")
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}>
+                <div
+                  className={`p-3 rounded-md text-sm ${
+                    message.includes("successful")
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
                   {message}
                 </div>
               )}
@@ -159,8 +165,10 @@ export default function AdminLogin() {
 
             <div className="mt-4 p-3 bg-blue-50 rounded-md">
               <p className="text-xs text-blue-700">
-                <strong>Demo Credentials:</strong><br />
-                Username: admin<br />
+                <strong>Demo Credentials:</strong>
+                <br />
+                Username: admin
+                <br />
                 Password: admin123
               </p>
             </div>

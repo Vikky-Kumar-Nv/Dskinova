@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "./Header.jsx";
-import Footer from "./Footer.jsx";
-import { newsItems } from "../data/mockednews";
+import Header from "../../components/Header.jsx";
+import Footer from "../../components/Footer.jsx";
+import { newsItems } from "../../data/mockednews";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,16 +25,16 @@ export default function Dashboard() {
       imagePreview: "",
       imageLoading: false,
       paragraphs: [""],
-      tags: [""]
+      tags: [""],
     },
-    popular: []
+    popular: [],
   });
 
   useEffect(() => {
     // Check if user is authenticated (you can replace this with proper auth logic)
-    const authStatus = localStorage.getItem('adminAuthenticated');
+    const authStatus = localStorage.getItem("adminAuthenticated");
     if (!authStatus) {
-      navigate('/admin-login');
+      navigate("/admin-login");
     } else {
       setIsAuthenticated(true);
     }
@@ -51,8 +51,8 @@ export default function Dashboard() {
   }, [newsList.length, currentPage, itemsPerPage]);
 
   const handleLogout = () => {
-    localStorage.removeItem('adminAuthenticated');
-    navigate('/admin-login');
+    localStorage.removeItem("adminAuthenticated");
+    navigate("/admin-login");
   };
 
   const handleManageNews = () => {
@@ -74,9 +74,9 @@ export default function Dashboard() {
         tags: [""],
         image: null,
         imagePreview: "",
-        imageLoading: false
+        imageLoading: false,
       },
-      popular: []
+      popular: [],
     });
     setShowNewsManager(true);
   };
@@ -94,26 +94,29 @@ export default function Dashboard() {
         paragraphs: [...news.content.paragraphs],
         tags: [...news.content.tags],
         image: null, // Will be set from existing image
-        imagePreview: news.content.image
+        imagePreview: news.content.image,
       },
-      popular: [...news.popular]
+      popular: [...news.popular],
     });
     setShowNewsManager(true);
   };
 
   const handleDeleteNews = (slug) => {
     if (window.confirm("Are you sure you want to delete this news article?")) {
-      setNewsList(newsList.filter(item => item.slug !== slug));
+      setNewsList(newsList.filter((item) => item.slug !== slug));
       setCurrentPage(1); // Reset to first page when deleting news
     }
   };
 
   const handleSaveNews = () => {
-    const slug = newsForm.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    const currentDate = new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    const slug = newsForm.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
 
     const newNews = {
@@ -126,14 +129,18 @@ export default function Dashboard() {
       content: {
         intro: newsForm.content.intro,
         image: newsForm.content.imagePreview || "/placeholder-image.jpg",
-        paragraphs: newsForm.content.paragraphs.filter(p => p.trim() !== ""),
-        tags: newsForm.content.tags.filter(t => t.trim() !== "")
+        paragraphs: newsForm.content.paragraphs.filter((p) => p.trim() !== ""),
+        tags: newsForm.content.tags.filter((t) => t.trim() !== ""),
       },
-      popular: newsForm.popular
+      popular: newsForm.popular,
     };
 
     if (editingNews) {
-      setNewsList(newsList.map(item => item.slug === editingNews.slug ? newNews : item));
+      setNewsList(
+        newsList.map((item) =>
+          item.slug === editingNews.slug ? newNews : item
+        )
+      );
     } else {
       setNewsList([...newsList, newNews]);
     }
@@ -144,79 +151,81 @@ export default function Dashboard() {
   };
 
   const handleFormChange = (field, value) => {
-    setNewsForm(prev => ({
+    setNewsForm((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleContentChange = (field, value) => {
-    setNewsForm(prev => ({
+    setNewsForm((prev) => ({
       ...prev,
       content: {
         ...prev.content,
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const addParagraph = () => {
-    setNewsForm(prev => ({
+    setNewsForm((prev) => ({
       ...prev,
       content: {
         ...prev.content,
-        paragraphs: [...prev.content.paragraphs, ""]
-      }
+        paragraphs: [...prev.content.paragraphs, ""],
+      },
     }));
   };
 
   const updateParagraph = (index, value) => {
-    setNewsForm(prev => ({
+    setNewsForm((prev) => ({
       ...prev,
       content: {
         ...prev.content,
-        paragraphs: prev.content.paragraphs.map((p, i) => i === index ? value : p)
-      }
+        paragraphs: prev.content.paragraphs.map((p, i) =>
+          i === index ? value : p
+        ),
+      },
     }));
   };
 
   const removeParagraph = (index) => {
-    setNewsForm(prev => ({
+    setNewsForm((prev) => ({
       ...prev,
       content: {
         ...prev.content,
-        paragraphs: prev.content.paragraphs.filter((_, i) => i !== index)
-      }
+        paragraphs: prev.content.paragraphs.filter((_, i) => i !== index),
+      },
     }));
   };
 
   const addTag = () => {
-    setNewsForm(prev => ({
+    setNewsForm((prev) => ({
       ...prev,
       content: {
         ...prev.content,
-        tags: [...prev.content.tags, ""]
-      }
+        tags: [...prev.content.tags, ""],
+      },
     }));
   };
 
   const updateTag = (index, value) => {
-    setNewsForm(prev => ({
+    setNewsForm((prev) => ({
       ...prev,
       content: {
         ...prev.content,
-        tags: prev.content.tags.map((t, i) => i === index ? value : t)
-      }
+        tags: prev.content.tags.map((t, i) => (i === index ? value : t)),
+      },
     }));
   };
 
   const removeTag = (index) => {
-    setNewsForm(prev => ({
+    setNewsForm((prev) => ({
       ...prev,
       content: {
         ...prev.content,
-        tags: prev.content.tags.filter((_, i) => i !== index)
-      }
+        tags: prev.content.tags.filter((_, i) => i !== index),
+      },
     }));
   };
 
@@ -246,56 +255,56 @@ export default function Dashboard() {
     const file = event.target.files[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
+      if (!file.type.startsWith("image/")) {
+        alert("Please select a valid image file");
         return;
       }
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
+        alert("Image size should be less than 5MB");
         return;
       }
 
       // Set loading state
-      if (type === 'card') {
-        setNewsForm(prev => ({ ...prev, cardImageLoading: true }));
-      } else if (type === 'content') {
-        setNewsForm(prev => ({
+      if (type === "card") {
+        setNewsForm((prev) => ({ ...prev, cardImageLoading: true }));
+      } else if (type === "content") {
+        setNewsForm((prev) => ({
           ...prev,
-          content: { ...prev.content, imageLoading: true }
+          content: { ...prev.content, imageLoading: true },
         }));
       }
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (type === 'card') {
-          setNewsForm(prev => ({
+        if (type === "card") {
+          setNewsForm((prev) => ({
             ...prev,
             cardImage: file,
             cardImagePreview: e.target.result,
-            cardImageLoading: false
+            cardImageLoading: false,
           }));
-        } else if (type === 'content') {
-          setNewsForm(prev => ({
+        } else if (type === "content") {
+          setNewsForm((prev) => ({
             ...prev,
             content: {
               ...prev.content,
               image: file,
               imagePreview: e.target.result,
-              imageLoading: false
-            }
+              imageLoading: false,
+            },
           }));
         }
       };
       reader.onerror = () => {
-        alert('Error reading file');
-        if (type === 'card') {
-          setNewsForm(prev => ({ ...prev, cardImageLoading: false }));
-        } else if (type === 'content') {
-          setNewsForm(prev => ({
+        alert("Error reading file");
+        if (type === "card") {
+          setNewsForm((prev) => ({ ...prev, cardImageLoading: false }));
+        } else if (type === "content") {
+          setNewsForm((prev) => ({
             ...prev,
-            content: { ...prev.content, imageLoading: false }
+            content: { ...prev.content, imageLoading: false },
           }));
         }
       };
@@ -304,22 +313,22 @@ export default function Dashboard() {
   };
 
   const removeImage = (type) => {
-    if (type === 'card') {
-      setNewsForm(prev => ({
+    if (type === "card") {
+      setNewsForm((prev) => ({
         ...prev,
         cardImage: null,
         cardImagePreview: "",
-        cardImageLoading: false
+        cardImageLoading: false,
       }));
-    } else if (type === 'content') {
-      setNewsForm(prev => ({
+    } else if (type === "content") {
+      setNewsForm((prev) => ({
         ...prev,
         content: {
           ...prev.content,
           image: null,
           imagePreview: "",
-          imageLoading: false
-        }
+          imageLoading: false,
+        },
       }));
     }
   };
@@ -340,9 +349,7 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-domine font-medium text-[#b37556] mb-2">
                   Admin Dashboard
                 </h1>
-                <p className="text-gray-600">
-                  Welcome to DSkinova Admin Panel
-                </p>
+                <p className="text-gray-600">Welcome to DSkinova Admin Panel</p>
               </div>
               <button
                 onClick={handleLogout}
@@ -353,30 +360,12 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Quick Actions */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-domine font-medium text-[#b37556] mb-4">
-                Quick Actions
-              </h2>
-              <div className="space-y-3">
-                <button
-                  onClick={handleManageNews}
-                  className="w-full bg-[#c98963] hover:bg-[#be7f58] text-white py-3 px-4 rounded-md transition-colors duration-300"
-                >
-                  Manage News
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* News Management */}
           {showNewsManager && (
             <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-domine font-medium text-[#b37556]">
-                  {editingNews ? 'Edit News Article' : 'Add New News Article'}
+                  {editingNews ? "Edit News Article" : "Add New News Article"}
                 </h2>
                 <button
                   onClick={() => setShowNewsManager(false)}
@@ -390,21 +379,29 @@ export default function Dashboard() {
                 {/* News Form */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title
+                    </label>
                     <input
                       type="text"
                       value={newsForm.title}
-                      onChange={(e) => handleFormChange('title', e.target.value)}
+                      onChange={(e) =>
+                        handleFormChange("title", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c98963]"
                       placeholder="Enter news title"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Excerpt
+                    </label>
                     <textarea
                       value={newsForm.excerpt}
-                      onChange={(e) => handleFormChange('excerpt', e.target.value)}
+                      onChange={(e) =>
+                        handleFormChange("excerpt", e.target.value)
+                      }
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c98963]"
                       placeholder="Short description for the news article"
@@ -412,10 +409,14 @@ export default function Dashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Hero Introduction</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Hero Introduction
+                    </label>
                     <textarea
                       value={newsForm.heroIntro}
-                      onChange={(e) => handleFormChange('heroIntro', e.target.value)}
+                      onChange={(e) =>
+                        handleFormChange("heroIntro", e.target.value)
+                      }
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c98963]"
                       placeholder="Introduction text for the hero section"
@@ -423,17 +424,21 @@ export default function Dashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Card Image (Thumbnail)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Card Image (Thumbnail)
+                    </label>
                     <div className="space-y-2">
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleImageUpload(e, 'card')}
+                        onChange={(e) => handleImageUpload(e, "card")}
                         disabled={newsForm.cardImageLoading}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c98963] disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       {newsForm.cardImageLoading && (
-                        <p className="text-sm text-blue-600">Uploading image...</p>
+                        <p className="text-sm text-blue-600">
+                          Uploading image...
+                        </p>
                       )}
                       {newsForm.cardImagePreview && (
                         <div className="relative inline-block">
@@ -443,22 +448,28 @@ export default function Dashboard() {
                             className="w-32 h-24 object-cover rounded border"
                           />
                           <button
-                            onClick={() => removeImage('card')}
+                            onClick={() => removeImage("card")}
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
                           >
                             ×
                           </button>
                         </div>
                       )}
-                      <p className="text-xs text-gray-500">Upload a thumbnail image for the news card (max 5MB)</p>
+                      <p className="text-xs text-gray-500">
+                        Upload a thumbnail image for the news card (max 5MB)
+                      </p>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Content Introduction</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Content Introduction
+                    </label>
                     <textarea
                       value={newsForm.content.intro}
-                      onChange={(e) => handleContentChange('intro', e.target.value)}
+                      onChange={(e) =>
+                        handleContentChange("intro", e.target.value)
+                      }
                       rows={4}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c98963]"
                       placeholder="Main introduction paragraph"
@@ -466,17 +477,21 @@ export default function Dashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Content Image</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Content Image
+                    </label>
                     <div className="space-y-2">
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleImageUpload(e, 'content')}
+                        onChange={(e) => handleImageUpload(e, "content")}
                         disabled={newsForm.content.imageLoading}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c98963] disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       {newsForm.content.imageLoading && (
-                        <p className="text-sm text-blue-600">Uploading image...</p>
+                        <p className="text-sm text-blue-600">
+                          Uploading image...
+                        </p>
                       )}
                       {newsForm.content.imagePreview && (
                         <div className="relative inline-block">
@@ -486,24 +501,31 @@ export default function Dashboard() {
                             className="w-48 h-32 object-cover rounded border"
                           />
                           <button
-                            onClick={() => removeImage('content')}
+                            onClick={() => removeImage("content")}
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
                           >
                             ×
                           </button>
                         </div>
                       )}
-                      <p className="text-xs text-gray-500">Upload the main content image for the news article (max 5MB)</p>
+                      <p className="text-xs text-gray-500">
+                        Upload the main content image for the news article (max
+                        5MB)
+                      </p>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Paragraphs</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Paragraphs
+                    </label>
                     {newsForm.content.paragraphs.map((paragraph, index) => (
                       <div key={index} className="flex gap-2 mb-2">
                         <textarea
                           value={paragraph}
-                          onChange={(e) => updateParagraph(index, e.target.value)}
+                          onChange={(e) =>
+                            updateParagraph(index, e.target.value)
+                          }
                           rows={3}
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c98963]"
                           placeholder={`Paragraph ${index + 1}`}
@@ -527,7 +549,9 @@ export default function Dashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tags
+                    </label>
                     {newsForm.content.tags.map((tag, index) => (
                       <div key={index} className="flex gap-2 mb-2">
                         <input
@@ -560,7 +584,7 @@ export default function Dashboard() {
                       onClick={handleSaveNews}
                       className="px-6 py-2 bg-[#c98963] text-white rounded-md hover:bg-[#be7f58] transition-colors duration-300"
                     >
-                      {editingNews ? 'Update News' : 'Save News'}
+                      {editingNews ? "Update News" : "Save News"}
                     </button>
                     <button
                       onClick={() => setShowNewsManager(false)}
@@ -573,11 +597,15 @@ export default function Dashboard() {
 
                 {/* News Preview */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Preview</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Preview
+                  </h3>
                   <div className="border border-gray-200 rounded-lg p-4">
                     {newsForm.cardImagePreview && (
                       <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2">Card Image Preview:</p>
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Card Image Preview:
+                        </p>
                         <img
                           src={newsForm.cardImagePreview}
                           alt="Card preview"
@@ -586,17 +614,20 @@ export default function Dashboard() {
                       </div>
                     )}
                     <h4 className="font-semibold text-lg text-gray-800 mb-2">
-                      {newsForm.title || 'News Title'}
+                      {newsForm.title || "News Title"}
                     </h4>
                     <p className="text-sm text-gray-600 mb-2">
-                      {newsForm.excerpt || 'News excerpt will appear here...'}
+                      {newsForm.excerpt || "News excerpt will appear here..."}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {newsForm.content.intro || 'Content introduction will appear here...'}
+                      {newsForm.content.intro ||
+                        "Content introduction will appear here..."}
                     </p>
                     {newsForm.content.imagePreview && (
                       <div className="my-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2">Content Image Preview:</p>
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Content Image Preview:
+                        </p>
                         <img
                           src={newsForm.content.imagePreview}
                           alt="Content preview"
@@ -604,18 +635,20 @@ export default function Dashboard() {
                         />
                       </div>
                     )}
-                    {newsForm.content.paragraphs.length > 0 && newsForm.content.paragraphs[0] && (
-                      <p className="text-sm text-gray-700 mt-2">
-                        {newsForm.content.paragraphs[0].substring(0, 100)}...
-                      </p>
-                    )}
-                    {newsForm.content.tags.length > 0 && newsForm.content.tags[0] && (
-                      <div className="mt-2">
-                        <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                          {newsForm.content.tags[0]}
-                        </span>
-                      </div>
-                    )}
+                    {newsForm.content.paragraphs.length > 0 &&
+                      newsForm.content.paragraphs[0] && (
+                        <p className="text-sm text-gray-700 mt-2">
+                          {newsForm.content.paragraphs[0].substring(0, 100)}...
+                        </p>
+                      )}
+                    {newsForm.content.tags.length > 0 &&
+                      newsForm.content.tags[0] && (
+                        <div className="mt-2">
+                          <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                            {newsForm.content.tags[0]}
+                          </span>
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>
@@ -639,7 +672,10 @@ export default function Dashboard() {
 
               <div className="space-y-4">
                 {currentNews.map((news) => (
-                  <div key={news.slug} className="border border-gray-200 rounded-lg p-4">
+                  <div
+                    key={news.slug}
+                    className="border border-gray-200 rounded-lg p-4"
+                  >
                     <div className="flex justify-between items-start gap-4">
                       <div className="flex-shrink-0">
                         <img
@@ -647,7 +683,8 @@ export default function Dashboard() {
                           alt={news.title}
                           className="w-24 h-24 object-cover rounded border"
                           onError={(e) => {
-                            e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMiAxMkM5Ljc5IDEyIDggMTAuNzkgOCA4UzEwLjc5IDQgMTIgNFMxNiA1Ljc5IDE2IDhTMTQuMjEgMTIgMTIgMTJaTTEyIDEzQzE2LjQyIDEzIDIwIDE1Ljc5IDIwIDIwVjIySDR2LTJDNSAxNS43OSA4IDEzIDEyIDEzWiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K";
+                            e.target.src =
+                              "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMiAxMkM5Ljc5IDEyIDggMTAuNzkgOCA4UzEwLjc5IDQgMTIgNFMxNiA1Ljc5IDE2IDhTMTQuMjEgMTIgMTIgMTJaTTEyIDEzQzE2LjQyIDEzIDIwIDE1Ljc5IDIwIDIwVjIySDR2LTJDNSAxNS43OSA4IDEzIDEyIDEzWiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K";
                           }}
                         />
                       </div>
@@ -655,13 +692,18 @@ export default function Dashboard() {
                         <h3 className="font-semibold text-lg text-gray-800 mb-2">
                           {news.title}
                         </h3>
-                        <p className="text-sm text-gray-600 mb-2">{news.date}</p>
+                        <p className="text-sm text-gray-600 mb-2">
+                          {news.date}
+                        </p>
                         <p className="text-gray-700 text-sm mb-3 line-clamp-2">
                           {news.excerpt}
                         </p>
                         <div className="flex flex-wrap gap-2 mb-3">
                           {news.content.tags.slice(0, 3).map((tag, index) => (
-                            <span key={index} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                            <span
+                              key={index}
+                              className="text-xs bg-gray-100 px-2 py-1 rounded"
+                            >
                               {tag}
                             </span>
                           ))}
@@ -694,7 +736,9 @@ export default function Dashboard() {
                 {newsList.length > itemsPerPage && (
                   <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
                     <div className="text-sm text-gray-700">
-                      Showing {startIndex + 1} to {Math.min(endIndex, newsList.length)} of {newsList.length} articles
+                      Showing {startIndex + 1} to{" "}
+                      {Math.min(endIndex, newsList.length)} of {newsList.length}{" "}
+                      articles
                     </div>
                     <div className="flex items-center space-x-2">
                       <button
@@ -707,14 +751,17 @@ export default function Dashboard() {
 
                       {/* Page Numbers */}
                       <div className="flex space-x-1">
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        {Array.from(
+                          { length: totalPages },
+                          (_, i) => i + 1
+                        ).map((page) => (
                           <button
                             key={page}
                             onClick={() => handlePageChange(page)}
                             className={`px-3 py-1 text-sm rounded-md transition-colors duration-300 ${
                               currentPage === page
-                                ? 'bg-[#c98963] text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                ? "bg-[#c98963] text-white"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                           >
                             {page}

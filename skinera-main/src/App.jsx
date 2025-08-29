@@ -6,8 +6,7 @@ import ServiceDetail from "./components/ServiceDetail.jsx";
 import ContactPage from "./components/contact.jsx";
 import NewsTemplate from "./components/NewsTemplate.jsx";
 import NewsArchive from "./components/NewsArchive.jsx";
-import AdminLogin from "./components/AdminLogin.jsx";
-import Dashboard from "./components/Dashboard.jsx";
+import { AdminLogin, Dashboard } from "./adminroutes/index.js";
 
 export default function App() {
   return (
