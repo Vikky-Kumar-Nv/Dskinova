@@ -57,11 +57,9 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch(
-        (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
-          "/api/admin-logout",
-        { method: "POST" }
-      );
+      await fetch(import.meta.env.VITE_SERVER_URL + "/api/admin-logout", {
+        method: "POST",
+      });
     } catch {}
     localStorage.removeItem("adminAuthenticated");
     navigate("/admin-login");

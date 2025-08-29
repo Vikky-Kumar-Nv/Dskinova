@@ -12,8 +12,7 @@ export default function AccountManagerModal({ isOpen, onClose }) {
     const loadProfile = async () => {
       try {
         const resp = await fetch(
-          (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
-            "/api/admin/profile"
+          import.meta.env.VITE_SERVER_URL + "/api/admin/profile"
         );
         const data = await resp.json();
         if (resp.ok && data?.success) {
@@ -78,8 +77,7 @@ export default function AccountManagerModal({ isOpen, onClose }) {
     (async () => {
       try {
         const resp = await fetch(
-          (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
-            "/api/admin/change-password",
+          import.meta.env.VITE_SERVER_URL + "/api/admin/change-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -126,8 +124,7 @@ export default function AccountManagerModal({ isOpen, onClose }) {
     (async () => {
       try {
         const resp = await fetch(
-          (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
-            "/api/admin/change-username",
+          import.meta.env.VITE_SERVER_URL + "/api/admin/change-username",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

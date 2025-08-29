@@ -3,16 +3,27 @@ import mongoose from "mongoose";
 import cors from "cors";
 import bcrypt from "bcryptjs";
 import Admin from "./models/Admin.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Basic Express app setup
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+app.use(
+  cors({
+    origin: CLIENT_URL,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-// MongoDB connection (local)
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/skinera";
+// MongoDB connection (from env only)
+const { MONGO_URI } = process.env;
 
 async function connectDb() {
+  if (!MONGO_URI) {
+    throw new Error("MONGO_URI is not set in environment");
+  }
   await mongoose.connect(MONGO_URI, {});
   console.log("MongoDB connected");
 }
@@ -71,20 +82,16 @@ app.post("/api/admin/change-password", async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body || {};
     if (!currentPassword || !newPassword) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Both currentPassword and newPassword are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Both currentPassword and newPassword are required",
+      });
     }
     if (String(newPassword).length < 6) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "New password must be at least 6 characters",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 6 characters",
+      });
     }
     const admin = await Admin.findOne({});
     if (!admin)
@@ -110,20 +117,16 @@ app.post("/api/admin/change-username", async (req, res) => {
   try {
     const { password, newUsername } = req.body || {};
     if (!password || !newUsername) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Both password and newUsername are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Both password and newUsername are required",
+      });
     }
     if (String(newUsername).trim().length < 3) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Username must be at least 3 characters",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Username must be at least 3 characters",
+      });
     }
     const admin = await Admin.findOne({});
     if (!admin)
