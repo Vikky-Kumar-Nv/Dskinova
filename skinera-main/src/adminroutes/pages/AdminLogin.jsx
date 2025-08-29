@@ -51,32 +51,26 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 700));
-
-      // Load stored credentials with defaults
-      const storedUsername = localStorage.getItem("admin.username") || "admin";
-      const storedPassword =
-        localStorage.getItem("admin.password") || "admin123";
-      // Seed if missing so Manage Account can update later
-      if (!localStorage.getItem("admin.username")) {
-        localStorage.setItem("admin.username", storedUsername);
-      }
-      if (!localStorage.getItem("admin.password")) {
-        localStorage.setItem("admin.password", storedPassword);
-      }
-
-      if (
-        formData.username === storedUsername &&
-        formData.password === storedPassword
-      ) {
+      // Call backend API
+      const resp = await fetch(
+        (import.meta.env.VITE_SERVER_URL || "http://localhost:3002") +
+          "/api/admin-login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: formData.username,
+            password: formData.password,
+          }),
+        }
+      );
+      const data = await resp.json();
+      if (resp.ok && data?.success) {
         localStorage.setItem("adminAuthenticated", "true");
         setMessage("Login successful! Redirecting...");
-        setTimeout(() => {
-          navigate("/admin-dashboard");
-        }, 800);
+        setTimeout(() => navigate("/admin-dashboard"), 800);
       } else {
-        setMessage("Invalid username or password");
+        setMessage(data?.message || "Invalid username or password");
       }
     } catch (error) {
       setMessage("Login failed. Please try again.");
@@ -175,14 +169,7 @@ export default function AdminLogin() {
               </Link>
             </div>
 
-            <div className="mt-4 p-3 bg-blue-50 rounded-md">
-              <p className="text-xs text-blue-700">
-                <strong>Default Credentials:</strong> Username: admin, Password:
-                admin123
-                <br />
-                You can change these in the Dashboard via Manage Account.
-              </p>
-            </div>
+            {/* Helper note removed: no demo credentials shown */}
           </div>
         </div>
       </main>

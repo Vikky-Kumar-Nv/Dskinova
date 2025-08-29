@@ -29,7 +29,6 @@ src/adminroutes/
 - **Description**: Main admin login page with authentication
 - **Features**:
   - Form validation
-  - Demo credentials (admin/admin123)
   - Loading states
   - Error handling
   - Redirects to dashboard on successful login
@@ -113,7 +112,7 @@ The Dashboard has been refactored into smaller, reusable components:
 ## Authentication Flow
 
 1. User navigates to `/admin-login`
-2. Enters credentials (demo: admin/admin123)
+2. Enters credentials
 3. On success, `adminAuthenticated` is stored in localStorage
 4. User is redirected to `/admin-dashboard`
 5. Dashboard checks authentication on mount

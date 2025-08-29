@@ -3,7 +3,6 @@ export { default as AdminLogin } from "./pages/AdminLogin.jsx";
 export { default as Dashboard } from "./pages/Dashboard.jsx";
 
 // Admin Components
-export { default as Login } from "./components/Login.jsx";
 export { default as DashboardHeader } from "./components/DashboardHeader.jsx";
 export { default as NewsManager } from "./components/NewsManager.jsx";
 export { default as NewsForm } from "./components/NewsForm.jsx";

@@ -4,26 +4,14 @@ import toast from "react-hot-toast";
 export default function AccountManagerModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState("password"); // 'password' | 'username'
 
-  // Stored credentials with safe defaults
-  const defaults = useMemo(
-    () => ({ username: "admin", password: "admin123" }),
-    []
-  );
-  const [stored, setStored] = useState({
-    username: defaults.username,
-    password: defaults.password,
-  });
+  // Stored credentials from localStorage only (no hardcoded defaults)
+  const [stored, setStored] = useState({ username: "", password: "" });
 
   useEffect(() => {
-    const u = localStorage.getItem("admin.username") || defaults.username;
-    const p = localStorage.getItem("admin.password") || defaults.password;
-    // seed if missing
-    if (!localStorage.getItem("admin.username"))
-      localStorage.setItem("admin.username", u);
-    if (!localStorage.getItem("admin.password"))
-      localStorage.setItem("admin.password", p);
+    const u = localStorage.getItem("admin.username") || "";
+    const p = localStorage.getItem("admin.password") || "";
     setStored({ username: u, password: p });
-  }, [defaults.username, defaults.password]);
+  }, []);
 
   // Change Password form state
   const [pwdForm, setPwdForm] = useState({
