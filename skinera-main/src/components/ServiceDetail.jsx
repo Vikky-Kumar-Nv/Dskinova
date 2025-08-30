@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
 import AppointmentModal from "./AppointmentModal.jsx";
@@ -9,7 +10,7 @@ import ServiceExtras from "./ServiceExtras.jsx";
 import ClientFaq from "./ClientFaq.jsx";
 import OurService from "./OurService.jsx";
 
-export default function ServiceDetail({ serviceId = "anti-aging" }) {
+export default function ServiceDetail({ serviceId }) {
   const [appointmentOpen, setAppointmentOpen] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
@@ -19,7 +20,11 @@ export default function ServiceDetail({ serviceId = "anti-aging" }) {
     console.log("Appointment request:", payload);
   };
 
-  const service = getServiceById(serviceId);
+  const params = typeof useParams === "function" ? useParams() : {};
+  const effectiveId =
+    serviceId || (params ? params.id : undefined) || "anti-aging";
+
+  const service = getServiceById(effectiveId);
 
   if (!service) {
     return <div className="text-center py-20">Service not found</div>;
@@ -73,7 +78,7 @@ export default function ServiceDetail({ serviceId = "anti-aging" }) {
               <div className="w-full lg:w-1/2 space-y-4 lg:space-y-6">
                 {/* Overview Section */}
                 <div className="space-y-2 lg:space-y-3">
-                  <h3 className="text-lg sm:text-xl font-bold text-[#b37556]">
+                  <h3 className="text-lg sm:text-xl font-domine font-medium text-[#b37556]">
                     {service.overview.title}
                   </h3>
                   <div className="text-gray-600 leading-relaxed text-sm">
@@ -92,7 +97,7 @@ export default function ServiceDetail({ serviceId = "anti-aging" }) {
 
                 {/* Included & Excluded Section */}
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-[#b37556] mb-3 lg:mb-4">
+                  <h3 className="text-lg sm:text-xl font-domine font-medium text-[#b37556] mb-3 lg:mb-4">
                     Included & Excluded
                   </h3>
 
@@ -136,7 +141,7 @@ export default function ServiceDetail({ serviceId = "anti-aging" }) {
                   <div className="mt-4 lg:mt-6">
                     <button
                       onClick={openAppointment}
-                      className="w-full sm:w-auto bg-[#c98963] hover:bg-[#be7f58] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300"
+                      className="w-full sm:w-auto bg-[#c98963] hover:bg-[#be7f58] text-white font-domine font-medium py-3 px-6 rounded-lg transition-all duration-300"
                     >
                       Book Appointment
                     </button>

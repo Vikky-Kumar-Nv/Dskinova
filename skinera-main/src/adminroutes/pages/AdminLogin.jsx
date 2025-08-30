@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "./Header.jsx";
-import Footer from "./Footer.jsx";
+import Header from "../../components/Header.jsx";
+import Footer from "../../components/Footer.jsx";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -15,15 +15,15 @@ export default function AdminLogin() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: "",
       }));
     }
   };
@@ -51,20 +51,35 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      // Simulate API call - replace with your actual authentication logic
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // For demo purposes, simple check
-      if (formData.username === "admin" && formData.password === "admin123") {
-        // Store authentication status
-        localStorage.setItem('adminAuthenticated', 'true');
+      // Call backend API
+      const resp = await fetch(
+        import.meta.env.VITE_SERVER_URL + "/api/admin-login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: formData.username,
+            password: formData.password,
+          }),
+        }
+      );
+      const data = await resp.json();
+      if (resp.ok && data?.success) {
+        localStorage.setItem("adminAuthenticated", "true");
+        // Optionally refresh stored profile username for UI
+        try {
+          const p = await fetch(
+            import.meta.env.VITE_SERVER_URL + "/api/admin/profile"
+          );
+          const pd = await p.json();
+          if (p.ok && pd?.success && pd?.username) {
+            localStorage.setItem("admin.username", pd.username);
+          }
+        } catch {}
         setMessage("Login successful! Redirecting...");
-        // Redirect to dashboard
-        setTimeout(() => {
-          navigate('/admin-dashboard');
-        }, 1500);
+        setTimeout(() => navigate("/admin-dashboard"), 800);
       } else {
-        setMessage("Invalid username or password");
+        setMessage(data?.message || "Invalid username or password");
       }
     } catch (error) {
       setMessage("Login failed. Please try again.");
@@ -83,14 +98,15 @@ export default function AdminLogin() {
               <h1 className="text-3xl font-domine font-medium text-[#b37556] mb-2">
                 Admin Login
               </h1>
-              <p className="text-gray-600">
-                Sign in to access the admin panel
-              </p>
+              <p className="text-gray-600">Sign in to access the admin panel</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Username
                 </label>
                 <input
@@ -110,7 +126,10 @@ export default function AdminLogin() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <input
@@ -130,11 +149,13 @@ export default function AdminLogin() {
               </div>
 
               {message && (
-                <div className={`p-3 rounded-md text-sm ${
-                  message.includes("successful")
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}>
+                <div
+                  className={`p-3 rounded-md text-sm ${
+                    message.includes("successful")
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
                   {message}
                 </div>
               )}
@@ -157,13 +178,7 @@ export default function AdminLogin() {
               </Link>
             </div>
 
-            <div className="mt-4 p-3 bg-blue-50 rounded-md">
-              <p className="text-xs text-blue-700">
-                <strong>Demo Credentials:</strong><br />
-                Username: admin<br />
-                Password: admin123
-              </p>
-            </div>
+            {/* Helper note removed: no demo credentials shown */}
           </div>
         </div>
       </main>

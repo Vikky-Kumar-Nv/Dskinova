@@ -108,90 +108,90 @@ export default function Header({ onBookAppointment }) {
                   );
                 }}
               >
-                <a
-                  href="#services"
+                <Link
+                  to="/service/anti-aging"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Anti-aging solutions
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/deep-peelings"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Deep peelings
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/facials"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Facials
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/laser-hair-removal"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Laser hair removal
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/laser-skin-therapy"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Laser skin therapy
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/mesotherapy"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Mesotherapy
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/microdermabrasion"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Microdermabrasion
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/pigmentation-solutions"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Pigmentation solutions
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/skin-tightening"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Skin tightening
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/hair-prp"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Hair PRP
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/hair-gfc"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   HAIR GFC
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/hair-regrowth-laser"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Hair regrowth laser
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/korean-skin-treatment"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Korean Skin Treatment
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/service/botox-treatment"
                   className="block px-4 py-2 hover:bg-[#f6e8e0]"
                 >
                   Botox Treatment
-                </a>
+                </Link>
               </div>
             </div>
             <Link
@@ -332,104 +332,104 @@ export default function Header({ onBookAppointment }) {
               }`}
               aria-hidden={!svcOpen}
             >
-              <a
-                href="#services"
+              <Link
+                to="/service/anti-aging"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Anti-aging solutions
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/deep-peelings"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Deep peelings
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/facials"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Facials
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/laser-hair-removal"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Laser hair removal
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/laser-skin-therapy"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Laser skin therapy
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/mesotherapy"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Mesotherapy
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/microdermabrasion"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Microdermabrasion
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/pigmentation-solutions"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Pigmentation solutions
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/skin-tightening"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Skin tightening
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/hair-prp"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Hair PRP
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/hair-gfc"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 HAIR GFC
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/hair-regrowth-laser"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Hair regrowth laser
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/korean-skin-treatment"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Korean Skin Treatment
-              </a>
-              <a
-                href="#services"
+              </Link>
+              <Link
+                to="/service/botox-treatment"
                 className="block py-2"
                 onClick={() => setOpen(false)}
               >
                 Botox Treatment
-              </a>
+              </Link>
             </div>
 
             {/* Call now CTA */}
