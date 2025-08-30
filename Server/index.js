@@ -90,7 +90,9 @@ async function generateUniqueSlug(baseSlug) {
 
 // Root route
 app.get("/", (req, res) => {
-  res.json({ message: "Dskinova server API is working" });
+  res.json({ message: "Dskinova server API is working",
+    status: "ok"
+   });
 });
 
 // Login route
