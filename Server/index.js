@@ -25,13 +25,43 @@ app.use(express.urlencoded({ extended: true }));
 // MongoDB connection (from env only)
 const { MONGO_URI } = process.env;
 
+// Global connection variable to avoid multiple connections
+let isConnected = false;
+
 async function connectDb() {
+  if (isConnected) {
+    return;
+  }
+
   if (!MONGO_URI) {
     throw new Error("MONGO_URI is not set in environment");
   }
-  await mongoose.connect(MONGO_URI, {});
-  console.log("MongoDB connected");
+
+  try {
+    await mongoose.connect(MONGO_URI, {
+      // Serverless-friendly options
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    isConnected = true;
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    throw error;
+  }
 }
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+  try {
+    await connectDb();
+    next();
+  } catch (error) {
+    console.error("Database connection middleware error:", error);
+    res.status(500).json({ error: "Database connection failed" });
+  }
+});
 
 // Cloudinary config
 cloudinary.config({
@@ -447,15 +477,21 @@ app.delete("/api/news/:slug", async (req, res) => {
   }
 });
 
-// Start server after DB is ready
-const PORT = process.env.PORT || 3002;
-connectDb()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+// For Vercel serverless deployment
+export default app;
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3002;
+  connectDb()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+        console.log(`API available at: http://localhost:${PORT}/api`);
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to start server:", err);
+      process.exit(1);
     });
-  })
-  .catch((err) => {
-    console.error("Failed to start server:", err);
-    process.exit(1);
-  });
+}
